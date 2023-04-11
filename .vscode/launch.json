@@ -1,0 +1,32 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "mercado_v1",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "mercado_v1 (profile mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "mercado_v1 (release mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "Run MyApp without sound null safety",
+            "request": "launch",
+            "type": "dart",
+            "program": "bin/main.dart",
+            "args": ["--no-sound-null-safety"]
+          }
+    ]
+}

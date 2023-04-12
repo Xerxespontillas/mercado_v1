@@ -1,3 +1,3 @@
 class Server{
-  final String url = 'https://192.168.1.5:3000';
+  final String url = 'http://172.29.7.254:3000';
 }   

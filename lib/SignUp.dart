@@ -43,7 +43,7 @@ class _SignUpState extends State<SignUp> {
     String role = _selectedRole.text;
     String phoneNumber = _phoneNumber.text;
 
-    var url = Uri.parse('http://192.168.1.5:3000/api/Signup');
+    var url = Uri.parse('http://172.29.7.254:3000/api/Signup');
 
     final response = await http.post(url,
         headers: {

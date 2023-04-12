@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mercado_v1/home.dart';
 
+import 'chat.dart';
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -61,9 +63,7 @@ class HomeTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Home Tab'),
-    );
+    return Home();
   }
 }
 
@@ -73,7 +73,7 @@ class ExploreTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Text('Chat'),
+      child: Chat(),
     );
   }
 }

@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:mercado_v1/utils.dart';
 
 import 'main.dart';
 
@@ -35,7 +35,7 @@ class _SignUpState extends State<SignUp> {
 
   bool isSignUpSuccessful = false;
 
-  Future<void>_submitForm() async {
+  Future<void> _submitForm() async {
     String username = _username.text;
     String password = _password.text;
     String address = _address.text;
@@ -43,16 +43,28 @@ class _SignUpState extends State<SignUp> {
     String role = _selectedRole.text;
     String phoneNumber = _phoneNumber.text;
 
-   
-final url = 
-  Uri.parse('https://192.168.1.4:3000/api/Signup');
+    var url = Uri.parse('http://192.168.1.5:3000/api/Signup');
 
- final response = await http.post(url, body: {
-      'usernname': username,
-      'password': password,
-    });
-final responseBody = response.body;
+    final response = await http.post(url,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'username': username,
+          'password': password,
+          'role': role,
+          'address': address,
+          'company': company,
+          'phoneNum': phoneNumber,
+        }));
+    final responseBody = response.body;
+    print(response.statusCode);
+    print(responseBody);
 
+    if (response.statusCode == 307) {
+      final location = response.headers['location'];
+      print('Redirecting to $location');
+    }
   }
 
   @override
@@ -114,7 +126,7 @@ final responseBody = response.body;
                 decoration: InputDecoration(labelText: 'Password'),
                 obscureText: true,
                 validator: (value) {
-                  if (value!.isEmpty|| value==null) {
+                  if (value!.isEmpty || value == null) {
                     return 'Please enter your password';
                   }
                   if (value.length < 6) {
@@ -154,7 +166,6 @@ final responseBody = response.body;
                   }
                   return null;
                 },
-                
               ),
               SizedBox(height: 16.0),
               ElevatedButton(
@@ -167,7 +178,6 @@ final responseBody = response.body;
                   if (_formKey.currentState!.validate()) {
                     // Call backend to create new user account
                     _formKey.currentState!.save();
-
                     // Navigate to home screen or login screen
                     // ignore: use_build_context_synchronously
                     Navigator.pushReplacement(

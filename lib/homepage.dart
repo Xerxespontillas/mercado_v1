@@ -39,7 +39,7 @@ class _HomePageState extends State<HomePage> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.explore),
+            icon: Icon(Icons.chat_bubble),
             label: 'Explore',
           ),
           BottomNavigationBarItem(
@@ -73,7 +73,7 @@ class ExploreTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Text('Explore Tab'),
+      child: Text('Chat'),
     );
   }
 }

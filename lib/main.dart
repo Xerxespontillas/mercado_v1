@@ -61,7 +61,7 @@ class LoginPageState extends State<MyHomePage> {
     }
 
     try {
-      var url = Uri.parse('http://192.168.1.5:3000/api/Login');
+      var url = Uri.parse('http://172.29.7.254:3000/api/Login');
       final response = await http.post(url,
           headers: {
             'Content-Type': 'application/json',

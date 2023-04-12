@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mercado_v1/homepage.dart';
+import 'package:mercado_v1/services/Fetchusers.dart';
 import 'SignUp.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:mercado_v1/utils.dart';
 
 void main() {
   runApp(const MyApp());
@@ -29,13 +31,16 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  State<MyHomePage> createState() => LoginPageState();
+  State<StatefulWidget> createState() => LoginPageState();
 }
 
 class LoginPageState extends State<MyHomePage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _isVisible = true;
+
+  late Future<Users> futureUser;
 
   @override
   void dispose() {
@@ -44,76 +49,63 @@ class LoginPageState extends State<MyHomePage> {
     super.dispose();
   }
 
-  _login() async {
-  String username = _usernameController.text;
-  String password = _passwordController.text;
+  Future<void> _login() async {
+    String username = _usernameController.text;
+    String password = _passwordController.text;
 
-  var uri = Uri.https('192.168.1.4:3000', '/api/Login');
-  var response = await http.get(uri);
-
-  if (response.statusCode == 200) {
-    // Login successful, navigate to home screen
-    var data = jsonDecode(response.body);
-    var usernameFromApi = data['username'];
-    var passwordFromApi = data['password'];
-
-    if (usernameFromApi == username && passwordFromApi == password) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const MyHomePage(title: 'login')),
+    if (username.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please enter both username and password')),
       );
-    } else {
-      // Invalid username or password
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Error'),
-            content: Text('Invalid username or password'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text('OK'),
-              ),
-            ],
-          );
-        },
+      return;
+    }
+
+    try {
+      var url = Uri.parse('http://192.168.1.5:3000/api/Login');
+      final response = await http.post(url,
+          headers: {
+            'Content-Type': 'application/json',
+            'username': username,
+            'password': password
+          },
+          body: jsonEncode({
+            'username': username,
+            'password': password,
+          }));
+      final responseBody = response.body;
+      print(response.statusCode);
+      print(responseBody);
+
+      if (response.statusCode == 307) {
+        final location = response.headers['location'];
+        print('Redirecting to $location');
+      }
+
+      if (response.statusCode == 200) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomePage()),
+        );
+      } else if (response.statusCode == 204) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomePage()),
+        );
+      } else if (response.statusCode == 401) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Incorrect username or password')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('An error occurred while logging in')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('An error occurred while logging in')),
       );
     }
-  } else {
-    // Login failed
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Error'),
-          content: Text('Failed to login'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
   }
-}
-
-  // }
-  // else {
-  //   // Login failed, display error message
-  //   ScaffoldMessenger.of(context).showSnackBar(
-  //     SnackBar(
-  //       content: Text('Invalid username or password.'),
-  //       duration: const Duration(seconds: 3),
-  //     ),
-  //   );
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -203,13 +195,21 @@ class LoginPageState extends State<MyHomePage> {
                               child: TextField(
                                 controller: _passwordController,
                                 decoration: InputDecoration(
+                                  suffixIcon: IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _isVisible = !_isVisible;
+                                      });
+                                    },
+                                    icon: const Icon(Icons.lock),
+                                  ),
                                   hintText: "Password",
                                   hintStyle: TextStyle(
                                     color: Colors.grey,
                                   ),
                                   border: InputBorder.none,
                                 ),
-                                obscureText: true,
+                                obscureText: _isVisible,
                               ),
                             ),
                           ],
